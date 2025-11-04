@@ -20,6 +20,7 @@ export async function uploadAndAnalyzeImage(imageFile) {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      withCredentials: true,
     });
 
     // 백엔드 응답 구조:

@@ -1,0 +1,25 @@
+# Node/React
+front/node_modules/
+front/.env
+front/build/
+front/dist/
+
+# Python/Flask
+backend/__pycache__/
+backend/.env
+backend/uploads/
+backend/results/
+backend/runs/
+
+# 모델 가중치(용량 큼) - 필요하면 LFS 사용 권장
+model/*.pt
+backend/model/*.pt
+
+# IDE/OS 잡파일
+.vscode/
+.idea/
+.DS_Store
+aiklp/
+# 모델 파일 무시
+backend/*.pt
+model/*.pt

@@ -66,7 +66,7 @@ export function ScoreBox({ imageSrc, score = 0, maxScore = 100 }) {
           <img
             src={imageSrc}
             alt="분석 이미지"
-            className="w-full h-full object-cover"
+            className="rounded-2xl max-w-full h-auto object-contain"
           />
         ) : (
           <span className="text-gray-400 text-lg font-medium">이미지</span>
