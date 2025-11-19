@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useImage } from "../ImageContext";
 import { ScoreBox } from "../Components/ScoreBox";
 import { AnalysisBox } from "../Components/AnalysisBox";
+import { HeatmapToggle } from "../Components/HeatmapToggle";
 
 export function AnalysisPage() {
   const navigate = useNavigate();
@@ -29,7 +30,6 @@ export function AnalysisPage() {
     );
   }
 
-  // ✅ ImageApi.jsx의 응답 구조에 맞게 수정
   const {
     success = false,
     message = "분석 실패",
@@ -40,7 +40,8 @@ export function AnalysisPage() {
     score = 0,
     maxScore = 100,
     feedback = "",
-    analyzedImage = uploadedImage
+    analyzedImage = uploadedImage,
+    heatmapImage = null  // 🔥 히트맵 이미지 추가
   } = data;
 
   if (!success) {
@@ -76,9 +77,44 @@ export function AnalysisPage() {
         AI가 깔끔하게 정리해 드립니다.
       </div>
 
-      <div className="flex justify-center items-center gap-12 pt-24">
+      <div className="flex justify-center items-start gap-12 pt-24">
         <div className="flex flex-col gap-12">
-          <ScoreBox imageSrc={analyzedImage} score={score} maxScore={maxScore} />
+          {/* 🔥 히트맵 토글로 교체 */}
+          <div className="flex flex-col gap-6">
+            <HeatmapToggle 
+              normalImage={analyzedImage}
+              heatmapImage={heatmapImage}
+            />
+            
+            {/* 점수 박스 */}
+            <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl px-8 py-6 shadow-md border-2 border-gray-200">
+              <div className="text-center">
+                <p className="text-gray-700 text-base mb-2">최종 점수</p>
+                <div className="flex items-center justify-center gap-3">
+                  <span className={`font-bold text-4xl ${
+                    score >= 90 ? 'text-green-600' :
+                    score >= 70 ? 'text-blue-600' :
+                    score >= 50 ? 'text-yellow-600' :
+                    'text-red-600'
+                  }`}>
+                    {score}점
+                  </span>
+                  <span className="text-gray-400 text-lg">/ {maxScore}점</span>
+                </div>
+                <p className={`text-lg font-semibold mt-3 ${
+                  score >= 90 ? 'text-green-600' :
+                  score >= 70 ? 'text-blue-600' :
+                  score >= 50 ? 'text-yellow-600' :
+                  'text-red-600'
+                }`}>
+                  {score >= 90 ? '🟢 매우 깨끗' :
+                   score >= 70 ? '🔵 깨끗함' :
+                   score >= 50 ? '🟡 보통' :
+                   '🔴 정리 필요'}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <AnalysisBox
