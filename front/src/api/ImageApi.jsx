@@ -2,7 +2,7 @@ import api from "./axios.jsx";
 
 /**
  * 이미지를 서버에 업로드하고 AI 분석을 요청
- * 백엔드 API 명세에 맞춰 엔드포인트와 응답 변환 처리
+ * 히트맵 이미지도 함께 수신
  * 
  * @param {File} imageFile - 업로드할 이미지 파일
  * @returns {Promise<Object>} 프론트엔드 형식으로 변환된 서버 응답 데이터
@@ -15,7 +15,6 @@ export async function uploadAndAnalyzeImage(imageFile) {
     formData.append("image", imageFile);
 
     // 서버에 이미지 업로드 및 분석 요청
-    // 엔드포인트: /analyze (NOT /api/analyze)
     const response = await api.post("/analyze", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -29,10 +28,11 @@ export async function uploadAndAnalyzeImage(imageFile) {
     //   "detections": [...],
     //   "report": {
     //     "score": 72,
-    //     "issues": ["의자 위 옷", "책"],
+    //     "issues": ["chair", "book"],
     //     "suggestions": [...]
     //   },
-    //   "result_image": "/results/test_image.jpg"
+    //   "result_image": "/results/test_image.jpg",
+    //   "heatmap_image": "/results/heatmap_test_image.jpg"
     // }
     
     const backendData = response.data;
@@ -46,18 +46,23 @@ export async function uploadAndAnalyzeImage(imageFile) {
         score: backendData.report?.score || 0,
         maxScore: 100,
         
-        // 피드백 텍스트 생성
+        // 피드백 텍스트 생성 (간결한 버전)
         feedback: generateFeedback(backendData),
         
-        // 결과 이미지 URL (전체 경로로 변환)
+        // 결과 이미지 URL
         analyzedImage: backendData.result_image 
           ? `http://localhost:5000${backendData.result_image}`
           : null,
         
-        // 추가 정보 (AnalysisPage에서 활용 가능)
+        // 히트맵 이미지 URL
+        heatmapImage: backendData.heatmap_image
+          ? `http://localhost:5000${backendData.heatmap_image}`
+          : null,
+        
+        // 추가 정보
         detections: backendData.detections || [],
         issues: backendData.report?.issues || [],
-        suggestions: backendData.report?.suggestions || [],
+        suggestions: backendData.report?.suggestions || []
       }
     };
 
@@ -73,6 +78,7 @@ export async function uploadAndAnalyzeImage(imageFile) {
 
 /**
  * 백엔드 응답을 사용자 친화적인 피드백 텍스트로 변환
+ * ✅ 상세 리포트 제거 - 간결한 버전만 표시
  * 
  * @param {Object} backendData - 백엔드 응답 데이터
  * @returns {string} 포맷된 피드백 텍스트
@@ -117,24 +123,38 @@ function generateFeedback(backendData) {
     });
   }
   
+  // ✅ detailed_report 부분 완전 제거!
+  
   return feedback.trim();
 }
 
 /**
- * 분석 결과를 서버에서 조회
- * (현재 백엔드 API 명세에는 없지만, 향후 확장용)
+ * 분석 기록 조회
  * 
- * @param {string} analysisId - 분석 ID
- * @returns {Promise<Object>} 분석 결과 데이터
+ * @param {number} limit - 조회할 최대 개수
+ * @returns {Promise<Array>} 분석 기록 리스트
  */
-export async function getAnalysisResult(analysisId) {
+export async function getAnalysisHistory(limit = 10) {
   try {
-    const response = await api.get(`/api/analysis/${analysisId}`);
+    const response = await api.get(`/history?limit=${limit}`);
     return response.data;
   } catch (error) {
-    console.error("분석 결과 조회 중 오류 발생:", error);
-    throw new Error(
-      error.response?.data?.message || "분석 결과를 가져오는데 실패했습니다."
-    );
+    console.error("히스토리 조회 중 오류 발생:", error);
+    throw new Error("히스토리를 가져오는데 실패했습니다.");
+  }
+}
+
+/**
+ * 통계 조회
+ * 
+ * @returns {Promise<Object>} 통계 데이터
+ */
+export async function getStatistics() {
+  try {
+    const response = await api.get('/statistics');
+    return response.data;
+  } catch (error) {
+    console.error("통계 조회 중 오류 발생:", error);
+    throw new Error("통계를 가져오는데 실패했습니다.");
   }
 }
