@@ -6,12 +6,11 @@ import React from "react";
  * 점수에 따라 동적으로 상태 메시지와 색상이 변경됨
  *
  * @param {Object} props - 컴포넌트 속성
- * @param {string} props.imageSrc - 표시할 이미지 URL
  * @param {number} props.score - 현재 점수 (0-100)
  * @param {number} [props.maxScore=100] - 최대 점수
  * @returns {JSX.Element} 이미지 섹션 UI
  */
-export function ScoreBox({ imageSrc, score = 0, maxScore = 100 }) {
+export function ScoreBox({ score = 0, maxScore = 100 }) {
   /**
    * 점수에 따라 상태 메시지와 색상 결정
    * @returns {{ message: string, color: string, bgColor: string }}
@@ -59,20 +58,7 @@ export function ScoreBox({ imageSrc, score = 0, maxScore = 100 }) {
   const status = getScoreStatus();
 
   return (
-    <div className="flex flex-col gap-6 h-full">
-      {/* 이미지 영역 */}
-      <div className="flex w-[550px] h-[400px] bg-gray-200 rounded-2xl flex items-center justify-center overflow-hidden shadow-md">
-        {imageSrc ? (
-          <img
-            src={imageSrc}
-            alt="분석 이미지"
-            className="rounded-2xl max-w-full h-auto object-contain"
-          />
-        ) : (
-          <span className="text-gray-400 text-lg font-medium">이미지</span>
-        )}
-      </div>
-
+    <div className="flex flex-col gap-6 h-full mb-6">
       {/* 점수 박스 */}
       <div className={`${status.bgColor} rounded-2xl px-8 py-6 shadow-md flex-shrink-0 border-2 border-gray-200`}>
         <div className="text-center">

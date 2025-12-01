@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useImage } from "../ImageContext";
 import { AnalysisBox } from "../Components/AnalysisBox";
 import { HeatmapToggle } from "../Components/HeatmapToggle";
+import { ScoreBox } from "../Components/ScoreBox";
+import { downloadImage } from "../utils/ImageDownload";
+
 
 export function AnalysisPage() {
   const navigate = useNavigate();
@@ -30,37 +33,66 @@ export function AnalysisPage() {
   }
 
   const { success, message, data } = analysisResult;
+  //-------------------------------------//
+  // 테스트용
+  /*const mock = {
+  success: true,
+  message: "mock",
+  data: {
+    score: 78,
+    maxScore: 100,
+    feedback: "방이 조금 어질러져 있어요!",
+    aiAdvice: "정리함에 물건을 넣어보세요.",
+    analyzedImage: "/example.jpg",
+    heatmapImage: "/example_heat.jpg",
+    improvedImage: "/example_improved.jpg"
+  }
+};
 
+const result = analysisResult ?? mock;
+
+const { success, message, data } = result;*/
+  //------------------------------------//
   const {
     score,
     maxScore,
     feedback,
     aiAdvice,
     analyzedImage,
-    heatmapImage
+    heatmapImage,
+    improvedImage,
   } = data;
 
   return (
     <div className="bg-sky-100 min-h-screen">
       <div className="text-5xl font-bold pl-24 pt-12">
-        어질러진 공간, <br />AI가 깔끔하게 정리해 드립니다.
+        어질러진 공간, <br />
+        AI가 해결책을 제시합니다.
       </div>
 
-      <div className="flex justify-center items-start gap-12 pt-24">
-        
-        <div className="flex flex-col gap-12">
-          <HeatmapToggle 
+      <div className="flex flex-row justify-center items-stretch gap-12 pt-16">
+        <div className="flex flex-col flex-row gap-12">
+          <HeatmapToggle
             normalImage={analyzedImage}
             heatmapImage={heatmapImage}
           />
+          <ScoreBox score={score} maxScore={maxScore} />
         </div>
-
-        <AnalysisBox
-          feedback={feedback}
-          aiAdvice={aiAdvice}
-          onButton1Click={() => navigate("/")}
-          onButton2Click={() => alert("결과를 저장했습니다!")}
-        />
+        <div className="h-full mb-20">
+          <AnalysisBox
+            feedback={feedback}
+            aiAdvice={aiAdvice}
+            improvedImage={improvedImage}
+            onButton1Click={() => navigate("/")}
+            onButton2Click={() => {
+              if (improvedImage) {
+                downloadImage(improvedImage, `정리된_공간_${Date.now()}.jpg`);
+              } else {
+                alert("저장할 이미지가 없습니다.");
+              }
+            }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import api from "./axios.jsx";
 /**
  * 이미지를 서버에 업로드하고 AI 분석을 요청
  * 히트맵 + ChatGPT 정리 조언(ai_advice) 포함
- * 
+ *
  * @param {File} imageFile - 업로드할 이미지 파일
  * @returns {Promise<Object>}
  */
@@ -49,6 +49,10 @@ export async function uploadAndAnalyzeImage(imageFile) {
         // 히트맵 URL
         heatmapImage: backendData.heatmap_image
           ? `http://localhost:5000${backendData.heatmap_image}`
+          : null,
+        // 개선된 이미지 URL (AI가 생성한 정리된 이미지)
+        improvedImage: backendData.improved_image
+          ? `http://localhost:5000${backendData.improved_image}`
           : null,
 
         // 기타 데이터
