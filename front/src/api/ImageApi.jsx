@@ -1,19 +1,15 @@
+// src/api/ImageApi.jsx
 import api from "./axios.jsx";
 
 /**
  * 이미지를 서버에 업로드하고 AI 분석을 요청
- * 히트맵 + ChatGPT 정리 조언(ai_advice) 포함
- *
- * @param {File} imageFile - 업로드할 이미지 파일
- * @returns {Promise<Object>}
+ * 🔥 3개 AI 개선사항 통합 버전
  */
 export async function uploadAndAnalyzeImage(imageFile) {
   try {
-    // FormData 생성
     const formData = new FormData();
     formData.append("image", imageFile);
 
-    // 서버로 업로드 + 분석 요청
     const response = await api.post("/analyze", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -22,9 +18,7 @@ export async function uploadAndAnalyzeImage(imageFile) {
     });
 
     const backendData = response.data;
-
-    // 🔥 서버 응답 로그 (정상 위치로 이동)
-    console.log("🔥 서버 응답:", backendData);
+    console.log("🔥 서버 응답 (완전 개선 버전):", backendData);
 
     // 프론트에서 사용할 형식으로 변환
     const transformedData = {
@@ -35,27 +29,51 @@ export async function uploadAndAnalyzeImage(imageFile) {
         score: backendData.report?.score || 0,
         maxScore: 100,
 
-        // 🔥 ChatGPT 분석 조언 추가
+        // 🔥 ChatGPT 조언
         aiAdvice: backendData.ai_advice || "",
 
         // 기존 분석 요약
         feedback: generateFeedback(backendData),
 
-        // 이미지 URL
+        // 이미지들
         analyzedImage: backendData.result_image
           ? `http://localhost:5000${backendData.result_image}`
           : null,
 
-        // 히트맵 URL
         heatmapImage: backendData.heatmap_image
           ? `http://localhost:5000${backendData.heatmap_image}`
           : null,
-        // 개선된 이미지 URL (AI가 생성한 정리된 이미지)
+
+        // 기존 improvedImage 유지
         improvedImage: backendData.improved_image
           ? `http://localhost:5000${backendData.improved_image}`
           : null,
 
-        // 기타 데이터
+        // 🔥 Segmentation 데이터
+        segmentation: {
+          zoneImage: backendData.segmentation?.zone_image
+            ? `http://localhost:5000${backendData.segmentation.zone_image}`
+            : null,
+          areaCoverage: backendData.segmentation?.area_coverage || null,
+          detectedAreas: backendData.segmentation?.detected_areas || [],
+        },
+
+        // 🔥 쌓임 데이터
+        stacking: {
+          stacks: backendData.stacking?.stacks || [],
+          stackingImage: backendData.stacking?.stacking_image
+            ? `http://localhost:5000${backendData.stacking.stacking_image}`
+            : null,
+          totalStacks: backendData.stacking?.total_stacks || 0,
+        },
+
+        // 🔥 추적 데이터
+        tracking: {
+          chronicProblems: backendData.tracking?.chronic_problems || [],
+          statistics: backendData.tracking?.statistics || null,
+        },
+
+        // 기타
         detections: backendData.detections || [],
         issues: backendData.report?.issues || [],
         suggestions: backendData.report?.suggestions || [],
@@ -72,7 +90,7 @@ export async function uploadAndAnalyzeImage(imageFile) {
 }
 
 /**
- * 기존 간결한 분석 결과 생성 함수
+ * 간결한 분석 결과 생성
  */
 function generateFeedback(backendData) {
   const { report } = backendData;

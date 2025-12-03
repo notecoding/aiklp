@@ -1,4 +1,5 @@
-import React from "react";
+// src/Pages/AnalysisPage.jsx
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImage } from "../ImageContext";
 import { AnalysisBox } from "../Components/AnalysisBox";
@@ -6,10 +7,10 @@ import { HeatmapToggle } from "../Components/HeatmapToggle";
 import { ScoreBox } from "../Components/ScoreBox";
 import { downloadImage } from "../utils/ImageDownload";
 
-
 export function AnalysisPage() {
   const navigate = useNavigate();
-  const { analysisResult, uploadedImage } = useImage();
+  const { analysisResult } = useImage();
+  const [activeView, setActiveView] = useState("normal"); // 🔥 뷰 전환
 
   if (!analysisResult) {
     return (
@@ -32,27 +33,7 @@ export function AnalysisPage() {
     );
   }
 
-  const { success, message, data } = analysisResult;
-  //-------------------------------------//
-  // 테스트용
-  /*const mock = {
-  success: true,
-  message: "mock",
-  data: {
-    score: 78,
-    maxScore: 100,
-    feedback: "방이 조금 어질러져 있어요!",
-    aiAdvice: "정리함에 물건을 넣어보세요.",
-    analyzedImage: "/example.jpg",
-    heatmapImage: "/example_heat.jpg",
-    improvedImage: "/example_improved.jpg"
-  }
-};
-
-const result = analysisResult ?? mock;
-
-const { success, message, data } = result;*/
-  //------------------------------------//
+  const { data } = analysisResult;
   const {
     score,
     maxScore,
@@ -61,7 +42,18 @@ const { success, message, data } = result;*/
     analyzedImage,
     heatmapImage,
     improvedImage,
+    segmentation, // 🔥 추가
+    stacking, // 🔥 추가
+    tracking, // 🔥 추가
   } = data;
+
+  // 🔥 사용 가능한 이미지들
+  const availableViews = {
+    normal: analyzedImage,
+    heatmap: heatmapImage,
+    zones: segmentation?.zoneImage,
+    stacks: stacking?.stackingImage,
+  };
 
   return (
     <div className="bg-sky-100 min-h-screen">
@@ -71,18 +63,119 @@ const { success, message, data } = result;*/
       </div>
 
       <div className="flex flex-row justify-center items-stretch gap-12 pt-16">
-        <div className="flex flex-col flex-row gap-12">
-          <HeatmapToggle
-            normalImage={analyzedImage}
-            heatmapImage={heatmapImage}
-          />
+        {/* 왼쪽: 이미지 + 점수 */}
+        <div className="flex flex-col gap-12">
+          {/* 🔥 이미지 뷰어 (다중 뷰) */}
+          <div className="flex flex-col gap-4">
+            {/* 이미지 표시 영역 */}
+            <div className="w-[550px] h-[400px] bg-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
+              {availableViews[activeView] ? (
+                <img
+                  src={availableViews[activeView]}
+                  alt={activeView}
+                  className="max-w-full max-h-full object-contain"
+                />
+              ) : (
+                <span className="text-gray-400 text-lg font-medium">
+                  이미지를 불러올 수 없습니다
+                </span>
+              )}
+            </div>
+
+            {/* 🔥 뷰 선택 버튼들 */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setActiveView("normal")}
+                className={`px-4 py-2 rounded-lg transition-all ${
+                  activeView === "normal"
+                    ? "bg-blue-500 text-white shadow-md"
+                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                }`}
+              >
+                📷 기본 분석
+              </button>
+
+              {heatmapImage && (
+                <button
+                  onClick={() => setActiveView("heatmap")}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    activeView === "heatmap"
+                      ? "bg-red-500 text-white shadow-md"
+                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  }`}
+                >
+                  🔥 히트맵
+                </button>
+              )}
+
+              {segmentation?.zoneImage && (
+                <button
+                  onClick={() => setActiveView("zones")}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    activeView === "zones"
+                      ? "bg-green-500 text-white shadow-md"
+                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  }`}
+                >
+                  📍 구역 분석
+                </button>
+              )}
+
+              {stacking?.stackingImage && (
+                <button
+                  onClick={() => setActiveView("stacks")}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    activeView === "stacks"
+                      ? "bg-orange-500 text-white shadow-md"
+                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  }`}
+                >
+                  📦 쌓임 감지
+                </button>
+              )}
+            </div>
+
+            {/* 현재 뷰 설명 */}
+            <div className="bg-white rounded-lg p-3 text-sm text-gray-700">
+              {activeView === "normal" && (
+                <>
+                  <strong>기본 분석:</strong> 감지된 물건과 위치 정보를
+                  표시합니다.
+                </>
+              )}
+              {activeView === "heatmap" && (
+                <>
+                  <strong>히트맵:</strong> 정리가 필요한 구역을 색상으로
+                  표시합니다.
+                </>
+              )}
+              {activeView === "zones" && (
+                <>
+                  <strong>구역 분석:</strong> Segmentation으로
+                  바닥/침대/책상을 구분합니다.
+                </>
+              )}
+              {activeView === "stacks" && (
+                <>
+                  <strong>쌓임 감지:</strong> 쌓이거나 포개진 물건 그룹을
+                  표시합니다.
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* 점수 박스 */}
           <ScoreBox score={score} maxScore={maxScore} />
         </div>
+
+        {/* 오른쪽: 분석 박스 */}
         <div className="h-full mb-20">
           <AnalysisBox
             feedback={feedback}
             aiAdvice={aiAdvice}
             improvedImage={improvedImage}
+            stackingData={stacking} // 🔥 추가
+            trackingData={tracking} // 🔥 추가
             onButton1Click={() => navigate("/")}
             onButton2Click={() => {
               if (improvedImage) {
