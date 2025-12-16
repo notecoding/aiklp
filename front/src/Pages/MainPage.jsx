@@ -3,6 +3,8 @@ import { AnalysisButton } from "../Components/AnalysisButton";
 import { ImgBox } from "../Components/ImgBox";
 import { ImgUpload } from "../Components/ImgUpload";
 import { StepsSection } from "../Components/StepsSection";
+import beforeImg from "./img/before.jpg";
+import afterImg from "./img/after.png";
 
 export function MainPage() {
   return (
@@ -16,8 +18,8 @@ export function MainPage() {
       <div>
         <div className="flex items-center justify-center gap-8 py-12">
           <ImgUpload />
-          <ImgBox />
-          <ImgBox />
+          <ImgBox src={beforeImg} />
+          <ImgBox src={afterImg} />
         </div>
 
         <div className="flex items-center justify-center pb-12">
