@@ -41,7 +41,7 @@ export function AnalysisPage() {
     aiAdvice,
     analyzedImage,
     heatmapImage,
-    improvedImage,
+    //improvedImage,
     segmentation, // 🔥 추가
     stacking, // 🔥 추가
     tracking, // 🔥 추가
@@ -173,17 +173,17 @@ export function AnalysisPage() {
           <AnalysisBox
             feedback={feedback}
             aiAdvice={aiAdvice}
-            improvedImage={improvedImage}
+            //improvedImage={improvedImage}
             stackingData={stacking} // 🔥 추가
             trackingData={tracking} // 🔥 추가
             onButton1Click={() => navigate("/")}
-            onButton2Click={() => {
+            /*onButton2Click={() => {
               if (improvedImage) {
                 downloadImage(improvedImage, `정리된_공간_${Date.now()}.jpg`);
               } else {
                 alert("저장할 이미지가 없습니다.");
               }
-            }}
+            }}*/
           />
         </div>
       </div>

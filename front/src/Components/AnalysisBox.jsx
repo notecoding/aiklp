@@ -7,7 +7,7 @@ import { ChronicProblems } from "./ChronicProblems";  // 🔥 추가
 export function AnalysisBox({
   feedback,
   aiAdvice = "",
-  improvedImage,
+  //improvedImage,
   stackingData = null,    // 🔥 추가
   trackingData = null,    // 🔥 추가
   onButton1Click,
@@ -56,14 +56,14 @@ export function AnalysisBox({
         </div>
 
         {/* 오른쪽: 기존 개선 이미지 */}
-        <div>
+        {/* <div>
           <ImgBox
             src={improvedImage}
             width={500}
             height={400}
             alt="AI 개선 이미지"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* 버튼 */}
@@ -74,12 +74,12 @@ export function AnalysisBox({
         >
           다시 분석하기
         </button>
-        <button
+        {/*<button
           onClick={onButton2Click}
           className="px-10 py-3.5 bg-green-500 text-white rounded-full hover:bg-green-600 shadow-md"
         >
           결과 저장
-        </button>
+        </button>*/}
       </div>
     </div>
   );
