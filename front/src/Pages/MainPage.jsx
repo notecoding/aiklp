@@ -4,6 +4,9 @@ import { ImgBox } from "../Components/ImgBox";
 import { ImgUpload } from "../Components/ImgUpload";
 import { StepsSection } from "../Components/StepsSection";
 
+import beforeImg from "./img/before.jpg";
+import afterImg from "./img/after.png";
+
 export function MainPage() {
   return (
     <div className="bg-sky-100 h-screen">
@@ -13,11 +16,11 @@ export function MainPage() {
       </div>
 
       {/* 중앙 영역 */}
-      <div>
+       <div>
         <div className="flex items-center justify-center gap-8 py-12">
           <ImgUpload />
-          <ImgBox />
-          <ImgBox />
+          <ImgBox src={beforeImg} />
+          <ImgBox src={afterImg} />
         </div>
 
         <div className="flex items-center justify-center pb-12">
